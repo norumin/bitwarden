@@ -2,6 +2,10 @@
 - name: Provision app instance
   hosts: all
   become: true
+  vars:
+    service_user_name: bitwarden
+    service_user_password:
+    app_directory: /opt/bitwarden
   tasks:
     - name: Install aptitude
       apt:
@@ -38,3 +42,16 @@
         name:
           - docker
           - docker-compose
+    - name: Prepare dedicated service user
+      user:
+        name: "{{ service_user_name }}"
+        password: "{{ service_user_password }}"
+        groups: docker
+    - name: Create app directory
+      file:
+        path: "{{ app_directory }}"
+        state: directory
+        mode: 0700
+        owner: "{{ service_user_name }}"
+        group: "{{ service_user_name }}"
+        recurse: yes
