@@ -10,7 +10,6 @@ resource "null_resource" "app_instance_provisioner" {
   triggers = {
     src_hash = filesha256("${path.module}/playbooks/app.yml")
     variables = jsonencode([
-      data.aws_region.current.name,
       var.app_instance_public_ip,
       var.app_keypair_path,
     ])
