@@ -31,7 +31,7 @@ module "app" {
   stage         = var.stage
   subnet_id     = module.root.public_subnet_ids[0]
   sg_ids        = module.root.app_instance_sg_ids
-  instance_type = "t4g.micro"
+  instance_type = "t3.micro"
   pubkey        = local.app_env_secrets.app_instance_public_key
 }
 

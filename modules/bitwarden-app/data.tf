@@ -8,7 +8,13 @@ data "aws_ami" "focal" {
   filter {
     name = "name"
     values = [
-      "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-${data.aws_ec2_instance_type.main.supported_architectures[0]}-server-*"
+      format(
+        "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-%s-server-*",
+        data.aws_ec2_instance_type.main.supported_architectures[0] == "x86_64" ||
+        data.aws_ec2_instance_type.main.supported_architectures[0] == "i386"
+        ? "amd64"
+        : data.aws_ec2_instance_type.main.supported_architectures[0],
+      )
     ]
   }
 

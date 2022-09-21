@@ -8,3 +8,9 @@ output "app_instance_public_ip" {
   value       = module.app.instance_public_ip
   sensitive   = true
 }
+
+output "cmd_ssh_to_app_instance" {
+  description = "Command to ssh into app instance"
+  value       = "ssh -i ${local.keypair_filename} -o IdentitiesOnly=yes ubuntu@${module.app.instance_public_ip}"
+  sensitive   = true
+}
