@@ -26,3 +26,16 @@ module "app" {
   instance_type = "t4g.micro"
   pubkey        = local.app_env_secrets.app_instance_public_key
 }
+
+module "provision" {
+  source = "./modules/bitwarden-provision"
+  depends_on = [
+    module.root,
+    module.app,
+  ]
+
+  stage                  = var.stage
+  domain                 = var.domain
+  app_instance_public_ip = module.app.instance_public_ip
+  app_keypair_path       = "${path.root}/${local.keypair_filename}"
+}
