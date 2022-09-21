@@ -27,11 +27,22 @@ module "app" {
   pubkey        = local.app_env_secrets.app_instance_public_key
 }
 
+module "end" {
+  source = "./modules/bitwarden-end"
+
+  stage                  = var.stage
+  domain                 = var.domain
+  route53_apex_zone_id   = data.aws_route53_zone.apex.zone_id
+  route53_default_ttl    = 3600
+  app_instance_public_ip = module.app.instance_public_ip
+}
+
 module "provision" {
   source = "./modules/bitwarden-provision"
   depends_on = [
     module.root,
     module.app,
+    module.end,
   ]
 
   stage                  = var.stage
