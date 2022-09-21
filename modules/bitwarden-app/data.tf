@@ -6,7 +6,7 @@ data "aws_ami" "focal" {
   most_recent = true
 
   filter {
-    name   = "name"
+    name = "name"
     values = [
       "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-${data.aws_ec2_instance_type.main.supported_architectures[0]}-server-*"
     ]
