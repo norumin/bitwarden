@@ -1,0 +1,109 @@
+---
+- name: Install and configure Bitwarden
+  hosts: all
+  become: true
+  vars:
+    app_domain:
+    service_user_name: bitwarden
+    app_directory: /opt/bitwarden
+    bw_coreversion: latest
+    bw_webversion: latest
+    bw_keyconnectorversion: latest
+    bw_dbname: vault
+    bw_installid:
+    bw_installkey:
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+    - name: Install required system packages
+      apt:
+        pkg:
+          - acl
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+    - name: Add docker gpg apt key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add docker repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+    - name: Install docker and docker-compose python module
+      pip:
+        name:
+          - docker
+          - docker-compose
+    - name: Prepare dedicated service user
+      register: service_user
+      user:
+        name: "{{ service_user_name }}"
+        password: "!"
+        groups: docker
+        state: present
+        shell: /bin/bash
+        update_password: on_create
+    - name: Create bwdata directory
+      file:
+        path: "{{ app_directory }}/bwdata"
+        state: directory
+        mode: 0700
+        owner: "{{ service_user_name }}"
+        group: "{{ service_user_name }}"
+        recurse: yes
+    - name: Create env directory
+      file:
+        path: "{{ app_directory }}/bwdata/env"
+        state: directory
+        mode: 0700
+        owner: "{{ service_user_name }}"
+        group: "{{ service_user_name }}"
+        recurse: yes
+    - name: Prepare uid.env file
+      copy:
+        dest: "{{ app_directory }}/bwdata/env/uid.env"
+        owner: "{{ service_user_name }}"
+        group: "{{ service_user_name }}"
+        content: |
+          LOCAL_UID={{ service_user.uid }}
+          LOCAL_GID={{ service_user.group }}
+    - name: Setup bitwarden
+      become: true
+      become_user: "{{ service_user_name }}"
+      args:
+        chdir: "{{ app_directory }}"
+        creates: "{{ app_directory }}/bwdata/docker"
+      command: |
+        docker run \
+            -it \
+            --rm \
+            --name setup \
+            -v {{ app_directory }}/bwdata:/bitwarden \
+            --env-file {{ app_directory }}/bwdata/env/uid.env \
+          bitwarden/setup:{{ bw_coreversion }} \
+            dotnet Setup.dll \
+              -install 1 \
+              -domain {{ app_domain }} \
+              -letsencrypt y \
+              -os lin \
+              -corev {{ bw_coreversion }} \
+              -webv {{ bw_webversion }} \
+              -dbname "{{ bw_dbname }}" \
+              -keyconnectorv {{ bw_keyconnectorversion }} \
+              -install-id {{ bw_installid }} \
+              -install-key {{ bw_installkey }}

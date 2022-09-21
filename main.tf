@@ -22,7 +22,7 @@ module "cert" {
 
   stage         = var.stage
   domain        = var.domain
-  email_address = "ops@norumin.com"
+  email_address = local.app_env_secrets.bitwarden_installation_email
 }
 
 module "app" {
@@ -56,4 +56,6 @@ module "provision" {
   domain                 = var.domain
   app_instance_public_ip = module.app.instance_public_ip
   app_keypair_path       = "${path.root}/${local.keypair_filename}"
+  bitwarden_installation_id = local.app_env_secrets.bitwarden_installation_id
+  bitwarden_installation_key = local.app_env_secrets.bitwarden_installation_key
 }

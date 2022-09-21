@@ -39,3 +39,15 @@ variable "app_keypair_path" {
   type        = string
   sensitive   = true
 }
+
+variable "bitwarden_installation_id" {
+  description = "Installation ID of this Bitwarden hosting"
+  type        = string
+  sensitive   = true
+}
+
+variable "bitwarden_installation_key" {
+  description = "Installation key of this Bitwarden hosting"
+  type        = string
+  sensitive   = true
+}
