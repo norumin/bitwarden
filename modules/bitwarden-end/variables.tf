@@ -28,12 +28,6 @@ variable "domain" {
   default     = "bitwarden.norumin.com"
 }
 
-variable "route53_apex_zone_id" {
-  description = "Zone ID of master hosted zone"
-  type        = string
-  sensitive   = true
-}
-
 variable "route53_default_ttl" {
   description = "Default TTL for DNS records"
   type        = string

@@ -17,6 +17,14 @@ module "root" {
   vpc_subnets = 3
 }
 
+module "cert" {
+  source = "./modules/bitwarden-cert"
+
+  stage         = var.stage
+  domain        = var.domain
+  email_address = "ops@norumin.com"
+}
+
 module "app" {
   source = "./modules/bitwarden-app"
 
@@ -32,8 +40,6 @@ module "end" {
 
   stage                  = var.stage
   domain                 = var.domain
-  route53_apex_zone_id   = data.aws_route53_zone.apex.zone_id
-  route53_default_ttl    = 3600
   app_instance_public_ip = module.app.instance_public_ip
 }
 
@@ -41,6 +47,7 @@ module "provision" {
   source = "./modules/bitwarden-provision"
   depends_on = [
     module.root,
+    module.cert,
     module.app,
     module.end,
   ]
