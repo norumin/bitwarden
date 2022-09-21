@@ -4,7 +4,6 @@
   become: true
   vars:
     service_user_name: bitwarden
-    service_user_password:
     app_directory: /opt/bitwarden
   tasks:
     - name: Install aptitude
@@ -45,8 +44,11 @@
     - name: Prepare dedicated service user
       user:
         name: "{{ service_user_name }}"
-        password: "{{ service_user_password }}"
+        password: "!"
         groups: docker
+        state: present
+        shell: /bin/bash
+        update_password: on_create
     - name: Create app directory
       file:
         path: "{{ app_directory }}"

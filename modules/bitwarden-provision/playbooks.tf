@@ -13,7 +13,6 @@ resource "null_resource" "app_instance_provisioner" {
       data.aws_region.current.name,
       var.app_instance_public_ip,
       var.app_keypair_path,
-      var.service_user_password,
     ])
   }
 
@@ -22,8 +21,7 @@ resource "null_resource" "app_instance_provisioner" {
       ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook ${path.module}/playbooks/app.yml \
         -u ubuntu \
         -i '${var.app_instance_public_ip},' \
-        --private-key ${var.app_keypair_path} \
-        -e 'service_user_password=${var.service_user_password}'
+        --private-key ${var.app_keypair_path}
     BASH
   }
 }

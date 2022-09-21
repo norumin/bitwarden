@@ -39,9 +39,3 @@ variable "app_keypair_path" {
   type        = string
   sensitive   = true
 }
-
-variable "service_user_password" {
-  description = "Password for dedicated service user inside app instance"
-  type        = string
-  sensitive   = true
-}

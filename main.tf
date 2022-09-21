@@ -49,5 +49,4 @@ module "provision" {
   domain                 = var.domain
   app_instance_public_ip = module.app.instance_public_ip
   app_keypair_path       = "${path.root}/${local.keypair_filename}"
-  service_user_password  = local.app_env_secrets.service_user_password
 }
