@@ -1,3 +1,15 @@
+[![License](https://img.shields.io/github/license/norumin/bitwarden)](LICENSE)
+![Language count](https://img.shields.io/github/languages/count/norumin/bitwarden)
+![Top language](https://img.shields.io/github/languages/top/norumin/bitwarden)
+[![Contributors](https://img.shields.io/github/contributors/norumin/bitwarden)](https://github.com/norumin/bitwarden/graphs/contributors)
+[![Stargazers](https://img.shields.io/github/stars/norumin/bitwarden?style=social)](https://github.com/norumin/bitwarden/stargazers)
+[![Forks](https://img.shields.io/github/forks/norumin/bitwarden?style=social)](https://github.com/norumin/bitwarden/network/members)
+
 # bitwarden
 
 > Bitwarden hosting for Norumin
+
+[![Infrastructure](https://github.com/norumin/bitwarden/actions/workflows/infrastructure.yml/badge.svg)](https://github.com/norumin/bitwarden/actions/workflows/infrastructure.yml)
+[![Security](https://github.com/norumin/bitwarden/actions/workflows/security.yml/badge.svg)](https://github.com/norumin/bitwarden/actions/workflows/security.yml)
+[![Lint](https://github.com/norumin/bitwarden/actions/workflows/lint.yml/badge.svg)](https://github.com/norumin/bitwarden/actions/workflows/lint.yml)
+[![Current online status](https://img.shields.io/website?down_color=lightgrey&down_message=offline&label=bw.norum.in&up_color=blue&up_message=online&url=https%3A%2F%2Fbw.norum.in)](https://bw.norum.in)
