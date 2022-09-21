@@ -30,11 +30,19 @@ resource "aws_security_group" "app" {
   vpc_id      = aws_vpc.root.id
 
   ingress {
-    description     = "Allow inbound traffic from LB to HTTP port"
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.lb.id]
+    description = "Allow inbound traffic from anywhere to HTTP port"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Allow inbound traffic from anywhere to HTTPS port"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
