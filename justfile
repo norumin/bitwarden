@@ -44,8 +44,8 @@ check-output:
 
 # open a ssh session into app instance
 @connect *args='': check-output
-	eval $(jq -r '.cmd_ssh_to_app_instance.value' output.json) "$@"
+	env -- $(jq -r '.cmd_ssh_to_app_instance.value' output.json) $@
 
 # run bitwarden installer playbook
 bw-install: check-output
-	eval $(jq -r '.cmd_bitwarden_installer.value' output.json)
+	bash -c "$(jq -r '.cmd_bitwarden_installer.value' output.json)"
