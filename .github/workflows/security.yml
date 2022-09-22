@@ -2,17 +2,13 @@ name: Security
 
 on:
   push:
-    paths:
-      - '**.tf'
-      - '**.hcl'
-      - '.env.example'
-      - 'modules/**'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   pull_request:
-    paths:
-      - '**.tf'
-      - '**.hcl'
-      - '.env.example'
-      - 'modules/**'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   workflow_dispatch:
 
 jobs:
@@ -23,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run Checkov
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@v12
         with:
           directory: .
           quiet: true # display only failed checks
@@ -31,6 +27,7 @@ jobs:
           soft_fail: false
           download_external_modules: true
           log_level: WARNING
+          output_format: sarif
       - name: Upload SARIF result
         if: always()
         uses: github/codeql-action/upload-sarif@v2
