@@ -35,7 +35,7 @@ variable "sg_ids" {
 variable "instance_type" {
   description = "Type of instance to create"
   type        = string
-  default     = "t3.micro"
+  default     = "t3.medium"
 }
 
 variable "pubkey" {
