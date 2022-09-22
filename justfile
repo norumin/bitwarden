@@ -1,39 +1,51 @@
 set dotenv-load
 set positional-arguments
 
-# List available recipes
+# list available recipes
 default:
   just --list
 
-# Wrap terragrunt with dotenv loading
+# wrap terragrunt with dotenv loading
 @tg *args='':
   terragrunt "$@"
 
-# Initialize terragrunt and tflint
+# initialize terragrunt and tflint
 init:
   tflint --init
   terragrunt init
 
-# Terragrunt output in json format (into output.json)
+# terragrunt output in json format (into output.json)
 output:
 	terragrunt output -json > output.json
 
-# Generate terraform graph and convert into svg format (requires graphviz)
+# generate terraform graph and convert into svg format (requires graphviz)
 graph:
 	terragrunt graph -draw-cycles > graph.gv && dot -Tsvg graph.gv > graph.svg
 
-# Generate a new keypair
+# generate a new keypair
 keygen:
 	ssh-keygen -t rsa -m PEM -f .keypair.pem -N '' -C '' && chmod 400 .keypair.pem
 
-# Format tf files
+# format tf files
 fmt:
 	terraform fmt -recursive
 
-# Format hcl files
+# format hcl files
 hclfmt:
 	terragrunt hclfmt
 
-# Lint project (by tflint)
+# lint project (by tflint)
 lint:
 	tflint
+
+# check if output.json file exists
+check-output:
+	test -f output.json
+
+# open a ssh session into app instance
+@connect *args='': check-output
+	eval $(jq -r '.cmd_ssh_to_app_instance.value' output.json) "$@"
+
+# run bitwarden installer playbook
+bw-install: check-output
+	eval $(jq -r '.cmd_bitwarden_installer.value' output.json)
