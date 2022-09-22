@@ -4,9 +4,7 @@
   become: true
   vars:
     app_domain:
-    ssl_server_cert:
-    ssl_private_key:
-    ssl_ca_cert:
+    ssl_cert_path:
     service_user_name: bitwarden
     app_directory: /opt/bitwarden
     bw_coreversion: latest
@@ -81,24 +79,16 @@
         content: |
           LOCAL_UID={{ service_user.uid }}
           LOCAL_GID={{ service_user.group }}
-    - name: "Copy SSL certificate: Server Certificate"
+    - name: "Copy SSL certificate"
       copy:
-        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/certificate.crt"
+        src: "{{ ssl_cert_path }}/{{ item.filename }}"
+        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/{{ item.filename }}"
         owner: "{{ service_user_name }}"
         group: "{{ service_user_name }}"
-        content: "{{ ssl_server_cert }}"
-    - name: "Copy SSL certificate: Private Key"
-      copy:
-        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/private.key"
-        owner: "{{ service_user_name }}"
-        group: "{{ service_user_name }}"
-        content: "{{ ssl_private_key }}"
-    - name: "Copy SSL certificate: CA Certificate"
-      copy:
-        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/ca.crt"
-        owner: "{{ service_user_name }}"
-        group: "{{ service_user_name }}"
-        content: "{{ ssl_ca_cert }}"
+      loop:
+        - { filename: "certificate.crt" }
+        - { filename: "private.key" }
+        - { filename: "ca.crt" }
     - name: Setup bitwarden
       become: true
       become_user: "{{ service_user_name }}"

@@ -56,3 +56,6 @@ graph.svg
 # terragrunt generated files
 /backend.tf
 /providers.tf
+
+# ssl certificate files
+/certs

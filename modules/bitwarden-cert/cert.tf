@@ -36,3 +36,24 @@ resource "aws_acm_certificate" "certificate" {
     Name = var.domain
   }
 }
+
+resource "local_sensitive_file" "server_cert" {
+  count = var.write_certificate_files ? 1 : 0
+
+  filename = "${var.cert_path}/certificate.crt"
+  content  = acme_certificate.certificate.certificate_pem
+}
+
+resource "local_sensitive_file" "private_key" {
+  count = var.write_certificate_files ? 1 : 0
+
+  filename = "${var.cert_path}/private.key"
+  content  = acme_certificate.certificate.private_key_pem
+}
+
+resource "local_sensitive_file" "ca_cert" {
+  count = var.write_certificate_files ? 1 : 0
+
+  filename = "${var.cert_path}/ca.crt"
+  content  = acme_certificate.certificate.issuer_pem
+}

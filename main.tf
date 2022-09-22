@@ -20,9 +20,11 @@ module "root" {
 module "cert" {
   source = "./modules/bitwarden-cert"
 
-  stage         = var.stage
-  domain        = var.domain
-  email_address = local.app_env_secrets.bitwarden_installation_email
+  stage                   = var.stage
+  domain                  = var.domain
+  email_address           = local.app_env_secrets.bitwarden_installation_email
+  write_certificate_files = true
+  cert_path               = local.cert_dir_path
 }
 
 module "app" {
@@ -32,7 +34,7 @@ module "app" {
   subnet_id     = module.root.public_subnet_ids[0]
   sg_ids        = module.root.app_instance_sg_ids
   instance_type = "t3.small"
-  pubkey        = local.app_env_secrets.app_instance_public_key
+  pubkey        = trimspace(local.app_env_secrets.app_instance_public_key)
 }
 
 module "end" {
@@ -54,7 +56,7 @@ module "provision" {
 
   stage                      = var.stage
   domain                     = var.domain
-  cert                       = module.cert.cert
+  cert_path                  = local.cert_dir_path
   app_instance_public_ip     = module.app.instance_public_ip
   app_keypair_path           = "${path.root}/${local.keypair_filename}"
   bitwarden_installation_id  = local.app_env_secrets.bitwarden_installation_id
