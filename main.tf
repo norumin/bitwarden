@@ -52,10 +52,11 @@ module "provision" {
     module.end,
   ]
 
-  stage                  = var.stage
-  domain                 = var.domain
-  app_instance_public_ip = module.app.instance_public_ip
-  app_keypair_path       = "${path.root}/${local.keypair_filename}"
-  bitwarden_installation_id = local.app_env_secrets.bitwarden_installation_id
+  stage                      = var.stage
+  domain                     = var.domain
+  cert                       = module.cert.cert
+  app_instance_public_ip     = module.app.instance_public_ip
+  app_keypair_path           = "${path.root}/${local.keypair_filename}"
+  bitwarden_installation_id  = local.app_env_secrets.bitwarden_installation_id
   bitwarden_installation_key = local.app_env_secrets.bitwarden_installation_key
 }

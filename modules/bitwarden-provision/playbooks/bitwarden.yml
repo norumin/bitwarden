@@ -4,6 +4,9 @@
   become: true
   vars:
     app_domain:
+    ssl_server_cert:
+    ssl_private_key:
+    ssl_ca_cert:
     service_user_name: bitwarden
     app_directory: /opt/bitwarden
     bw_coreversion: latest
@@ -58,22 +61,18 @@
         state: present
         shell: /bin/bash
         update_password: on_create
-    - name: Create bwdata directory
+    - name: Prepare bwdata directory
       file:
-        path: "{{ app_directory }}/bwdata"
+        path: "{{ item.path }}"
         state: directory
         mode: 0700
         owner: "{{ service_user_name }}"
         group: "{{ service_user_name }}"
         recurse: yes
-    - name: Create env directory
-      file:
-        path: "{{ app_directory }}/bwdata/env"
-        state: directory
-        mode: 0700
-        owner: "{{ service_user_name }}"
-        group: "{{ service_user_name }}"
-        recurse: yes
+      loop:
+        - { path: "{{ app_directory }}/bwdata" }
+        - { path: "{{ app_directory }}/bwdata/env" }
+        - { path: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}" }
     - name: Prepare uid.env file
       copy:
         dest: "{{ app_directory }}/bwdata/env/uid.env"
@@ -82,6 +81,24 @@
         content: |
           LOCAL_UID={{ service_user.uid }}
           LOCAL_GID={{ service_user.group }}
+    - name: "Copy SSL certificate: Server Certificate"
+      copy:
+        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/certificate.crt"
+        owner: "{{ service_user_name }}"
+        group: "{{ service_user_name }}"
+        content: "{{ ssl_server_cert }}"
+    - name: "Copy SSL certificate: Private Key"
+      copy:
+        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/private.key"
+        owner: "{{ service_user_name }}"
+        group: "{{ service_user_name }}"
+        content: "{{ ssl_private_key }}"
+    - name: "Copy SSL certificate: CA Certificate"
+      copy:
+        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/ca.crt"
+        owner: "{{ service_user_name }}"
+        group: "{{ service_user_name }}"
+        content: "{{ ssl_ca_cert }}"
     - name: Setup bitwarden
       become: true
       become_user: "{{ service_user_name }}"
@@ -107,3 +124,33 @@
               -keyconnectorv {{ bw_keyconnectorversion }} \
               -install-id {{ bw_installid }} \
               -install-key {{ bw_installkey }}
+    - name: Prepare docker-compose volume directories
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: 0700
+        owner: "{{ service_user_name }}"
+        group: "{{ service_user_name }}"
+        recurse: yes
+      loop:
+        - { path: "{{ app_directory }}/core" }
+        - { path: "{{ app_directory }}/core/attachments" }
+        - { path: "{{ app_directory }}/logs" }
+        - { path: "{{ app_directory }}/logs/admin" }
+        - { path: "{{ app_directory }}/logs/api" }
+        - { path: "{{ app_directory }}/logs/events" }
+        - { path: "{{ app_directory }}/logs/icons" }
+        - { path: "{{ app_directory }}/logs/identity" }
+        - { path: "{{ app_directory }}/logs/mssql" }
+        - { path: "{{ app_directory }}/logs/nginx" }
+        - { path: "{{ app_directory }}/logs/notifications" }
+        - { path: "{{ app_directory }}/logs/sso" }
+        - { path: "{{ app_directory }}/logs/portal" }
+        - { path: "{{ app_directory }}/mssql/backups" }
+        - { path: "{{ app_directory }}/mssql/data" }
+    - name: Start docker-compose
+      become: true
+      become_user: "{{ service_user_name }}"
+      community.docker.docker_compose:
+        project_src: "{{ app_directory }}/bwdata/docker"
+        restarted: true
