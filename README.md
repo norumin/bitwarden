@@ -9,7 +9,4 @@
 
 > Bitwarden hosting for Norumin
 
-[![Infrastructure](https://github.com/norumin/bitwarden/actions/workflows/infrastructure.yml/badge.svg)](https://github.com/norumin/bitwarden/actions/workflows/infrastructure.yml)
-[![Security](https://github.com/norumin/bitwarden/actions/workflows/security.yml/badge.svg)](https://github.com/norumin/bitwarden/actions/workflows/security.yml)
-[![Lint](https://github.com/norumin/bitwarden/actions/workflows/lint.yml/badge.svg)](https://github.com/norumin/bitwarden/actions/workflows/lint.yml)
 [![Current online status](https://img.shields.io/website?down_color=lightgrey&down_message=offline&label=bw.norum.in&up_color=blue&up_message=online&url=https%3A%2F%2Fbw.norum.in)](https://bw.norum.in)
