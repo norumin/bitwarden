@@ -36,16 +36,6 @@ module "root" {
   vpc_subnets = 3
 }
 
-module "cert" {
-  source = "./modules/bitwarden-cert"
-
-  app_name      = var.app_name
-  app           = var.app
-  stage         = var.stage
-  domain        = var.domain
-  email_address = local.app_env_secrets.bitwarden_installation_email
-}
-
 module "app" {
   source = "./modules/bitwarden-app"
 
@@ -72,7 +62,6 @@ module "provision" {
   source = "./modules/bitwarden-provision"
   depends_on = [
     module.root,
-    module.cert,
     module.app,
     module.end,
   ]
@@ -81,7 +70,6 @@ module "provision" {
   app                        = var.app
   stage                      = var.stage
   domain                     = var.domain
-  cert                       = module.cert.cert
   app_instance_public_ip     = module.app.instance_public_ip
   app_keypair_path           = "${path.root}/${local.keypair_filename}"
   bitwarden_installation_id  = local.app_env_secrets.bitwarden_installation_id

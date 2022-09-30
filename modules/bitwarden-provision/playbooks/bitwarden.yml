@@ -4,9 +4,6 @@
   become: true
   vars:
     app_domain:
-    ssl_certificate_pem:
-    ssl_issuer_pem:
-    ssl_private_key_pem:
     service_user_name: bitwarden
     app_directory: /opt/bitwarden
     bw_coreversion: latest
@@ -72,7 +69,6 @@
       loop:
         - { path: "{{ app_directory }}/bwdata" }
         - { path: "{{ app_directory }}/bwdata/env" }
-        - { path: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}" }
     - name: Prepare uid.env file
       copy:
         dest: "{{ app_directory }}/bwdata/env/uid.env"
@@ -81,24 +77,6 @@
         content: |
           LOCAL_UID={{ service_user.uid }}
           LOCAL_GID={{ service_user.group }}
-    - name: Copy SSL certificate - Server certificate
-      copy:
-        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/certificate.crt"
-        owner: "{{ service_user_name }}"
-        group: "{{ service_user_name }}"
-        content: "{{ ssl_certificate_pem }}"
-    - name: Copy SSL certificate - CA certificate
-      copy:
-        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/ca.crt"
-        owner: "{{ service_user_name }}"
-        group: "{{ service_user_name }}"
-        content: "{{ ssl_issuer_pem }}"
-    - name: Copy SSL certificate - Private key
-      copy:
-        dest: "{{ app_directory }}/bwdata/ssl/{{ app_domain }}/private.key"
-        owner: "{{ service_user_name }}"
-        group: "{{ service_user_name }}"
-        content: "{{ ssl_private_key_pem }}"
     - name: Setup bitwarden
       become: true
       become_user: "{{ service_user_name }}"
