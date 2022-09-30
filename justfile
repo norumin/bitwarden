@@ -6,46 +6,49 @@ default:
   just --list
 
 # wrap terragrunt with dotenv loading
-@tg *args='':
-  terragrunt "$@"
+tg *args='':
+  terragrunt $@
 
-# initialize terragrunt and tflint
-init:
-  tflint --init
-  terragrunt init
+# initialize terragrunt project
+init *args='':
+  terragrunt init $@
+
+# upgrade providers
+upgrade *args='':
+  terragrunt init -upgrade $@
+
+# validate terragrunt project
+validate *args='':
+  terragrunt validate $@
+
+# check for infrastructure drift
+drift-check *args='':
+  terragrunt plan -detailed-exitcode $@
 
 # terragrunt output in json format (into output.json)
-output:
+output-json:
 	terragrunt output -json > output.json
 
 # generate terraform graph and convert into svg format (requires graphviz)
 graph:
 	terragrunt graph -draw-cycles > graph.gv && dot -Tsvg graph.gv > graph.svg
 
-# generate a new keypair
-keygen:
-	ssh-keygen -t rsa -m PEM -f .keypair.pem -N '' -C '' && chmod 400 .keypair.pem
-
-# format tf files
+# format tf and hcl files
 fmt:
-	terraform fmt -recursive
-
-# format hcl files
-hclfmt:
-	terragrunt hclfmt
+	terraform fmt -recursive && terragrunt hclfmt
 
 # lint project (by tflint)
 lint:
-	tflint
+	tflint --init && tflint
 
 # check if output.json file exists
 check-output:
 	test -f output.json
 
-# open a ssh session into app instance
-@connect *args='': check-output
-	env -- $(jq -r '.cmd_ssh_to_app_instance.value' output.json) $@
-
 # run bitwarden installer playbook
 bw-install: check-output
 	bash -c "$(jq -r '.cmd_bitwarden_installer.value' output.json)"
+
+# open a ssh session into app instance
+connect *args='': check-output
+	env -- $(jq -r '.cmd_ssh_to_app_instance.value' output.json) $@

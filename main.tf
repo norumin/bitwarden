@@ -1,12 +1,29 @@
-terraform {
-  required_version = ">= 1.2"
+variable "app_name" {
+  description = "Name of this app"
+  type        = string
+  default     = "Norumin Password Vault"
+}
 
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.21"
-    }
-  }
+variable "app" {
+  description = "URL friendly name of this app"
+  type        = string
+  default     = "bitwarden"
+}
+
+variable "stage" {
+  description = "Stage of deployment"
+  type        = string
+  default     = "production"
+}
+
+variable "domain" {
+  description = "Domain of this app"
+  type        = string
+  default     = "bitwarden.norumin.com"
+}
+
+locals {
+  cert_dir_path             = "${abspath(path.root)}/certs"
 }
 
 module "root" {
@@ -61,4 +78,27 @@ module "provision" {
   app_keypair_path           = "${path.root}/${local.keypair_filename}"
   bitwarden_installation_id  = local.app_env_secrets.bitwarden_installation_id
   bitwarden_installation_key = local.app_env_secrets.bitwarden_installation_key
+}
+
+output "app_url" {
+  description = "URL for this app"
+  value       = "https://${var.domain}"
+}
+
+output "app_instance_public_ip" {
+  description = "Public IP of app instance"
+  value       = module.app.instance_public_ip
+  sensitive   = true
+}
+
+output "cmd_ssh_to_app_instance" {
+  description = "Command to ssh into app instance"
+  value       = "ssh -i ${local.keypair_filename} -o IdentitiesOnly=yes ubuntu@${module.app.instance_public_ip}"
+  sensitive   = true
+}
+
+output "cmd_bitwarden_installer" {
+  description = "Command to run to bitwarden installer playbook"
+  value       = module.provision.cmd_bitwarden_installer
+  sensitive   = true
 }

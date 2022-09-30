@@ -33,6 +33,11 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# dotenv files
+.env
+.env.*
+!.env.example
+
 # terragrunt cache directories
 **/.terragrunt-cache/*
 
@@ -44,18 +49,12 @@ output.json
 graph.gv
 graph.svg
 
+# terragrunt generated files
+/terraform.tf
+/providers.tf
+/backend.tf
+/secrets.tf
+
 # ssh keypairs
 *.pem
 *.pem.pub
-
-# dotenv files
-.env
-.env.*
-!.env.example
-
-# terragrunt generated files
-/backend.tf
-/providers.tf
-
-# ssl certificate files
-/certs
