@@ -1,9 +1,12 @@
+# REF: https://bitwarden.com/help/install-on-premise-linux/
+
 ---
 - name: Install and configure Bitwarden
   hosts: all
   become: true
   vars:
     app_domain:
+    letsencrypt_contact_email:
     service_user_name: bitwarden
     app_directory: /opt/bitwarden
     bw_coreversion: latest
@@ -69,6 +72,7 @@
       loop:
         - { path: "{{ app_directory }}/bwdata" }
         - { path: "{{ app_directory }}/bwdata/env" }
+        - { path: "{{ app_directory }}/bwdata/letsencrypt" }
     - name: Prepare uid.env file
       copy:
         dest: "{{ app_directory }}/bwdata/env/uid.env"
@@ -77,6 +81,21 @@
         content: |
           LOCAL_UID={{ service_user.uid }}
           LOCAL_GID={{ service_user.group }}
+    - name: Get a fresh Let's Encrypt SSL certificate
+      become: true
+      become_user: "{{ service_user_name }}"
+      args:
+        chdir: "{{ app_directory }}"
+      command: |
+        docker run -it --rm --name certbot \
+            -p 80:80 \
+            -v {{ app_directory }}/bwdata/letsencrypt:/etc/letsencrypt/ \
+          certbot/certbot \
+            certonly --standalone --noninteractive --agree-tos \
+              --preferred-challenges http \
+              --email {{ letsencrypt_contact_email }} \
+              -d {{ app_domain }} \
+              --logs-dir /etc/letsencrypt/logs
     - name: Setup bitwarden
       become: true
       become_user: "{{ service_user_name }}"
@@ -84,15 +103,11 @@
         chdir: "{{ app_directory }}"
         creates: "{{ app_directory }}/bwdata/docker"
       command: |
-        docker run \
-            -it \
-            --rm \
-            --name setup \
+        docker run -it --rm --name setup \
             -v {{ app_directory }}/bwdata:/bitwarden \
             --env-file {{ app_directory }}/bwdata/env/uid.env \
           bitwarden/setup:{{ bw_coreversion }} \
-            dotnet Setup.dll \
-              -install 1 \
+            dotnet Setup.dll -install 1 \
               -domain {{ app_domain }} \
               -letsencrypt y \
               -os lin \

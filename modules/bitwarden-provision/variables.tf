@@ -28,6 +28,11 @@ variable "domain" {
   default     = "bitwarden.norumin.com"
 }
 
+variable "letsencrypt_contact_email" {
+  description = "Contact email address for issuing a Let's Encrypt SSL certificate"
+  type        = string
+}
+
 variable "app_instance_public_ip" {
   description = "Public IP address of the app instance"
   type        = string

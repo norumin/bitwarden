@@ -12,6 +12,7 @@ locals {
       -i '${var.app_instance_public_ip},' \
       --private-key ${var.app_keypair_path} \
       -e 'app_domain=${var.domain}' \
+      -e 'letsencrypt_contact_email=${var.letsencrypt_contact_email}' \
       -e 'bw_installid=${var.bitwarden_installation_id}' \
       -e 'bw_installkey=${var.bitwarden_installation_key}'
   BASH
