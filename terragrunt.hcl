@@ -8,10 +8,10 @@ locals {
   backend_bucket    = get_env("BACKEND_BUCKET")
   backend_locktable = get_env("BACKEND_LOCKTABLE")
   backend_region    = get_env("BACKEND_REGION")
-  app_name = get_env("APP_NAME", "Norumin Password Vault")
-  app      = get_env("APP", "bitwarden")
-  stage    = get_env("STAGE", "production")
-  domain   = get_env("DOMAIN", "bitwarden.norumin.com")
+  app_name          = get_env("APP_NAME", "Norumin Password Vault")
+  app               = get_env("APP", "bitwarden")
+  stage             = get_env("STAGE", "production")
+  domain            = get_env("DOMAIN", "bitwarden.norumin.com")
 }
 
 # terragrunt configurations
@@ -39,11 +39,6 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 4.31"
-    }
-
-    local = {
-      source  = "hashicorp/local"
-      version = "~> 2.2"
     }
   }
 }
@@ -96,16 +91,6 @@ locals {
 
 data "aws_secretsmanager_secret_version" "app_env" {
   secret_id = "scrt-$${var.app}-app-$${var.stage}-env"
-}
-
-data "aws_s3_object" "keypair" {
-  bucket = "${local.backend_bucket}"
-  key    = "env:/$${var.stage}/$${var.app}/.keypair.pem"
-}
-
-resource "local_sensitive_file" "keypair" {
-  filename = "$${path.root}/$${local.keypair_filename}"
-  content  = data.aws_s3_object.keypair.body
 }
 EOF
 }

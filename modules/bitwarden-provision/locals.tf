@@ -12,7 +12,9 @@ locals {
       -i '${var.app_instance_public_ip},' \
       --private-key ${var.app_keypair_path} \
       -e 'app_domain=${var.domain}' \
-      -e 'ssl_cert_path=${var.cert_path}' \
+      -e 'ssl_certificate_pem=${var.cert.certificate_pem}' \
+      -e 'ssl_issuer_pem=${var.cert.issuer_pem}' \
+      -e 'ssl_private_key_pem=${var.cert.private_key_pem}' \
       -e 'bw_installid=${var.bitwarden_installation_id}' \
       -e 'bw_installkey=${var.bitwarden_installation_key}'
   BASH

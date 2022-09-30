@@ -28,9 +28,14 @@ variable "domain" {
   default     = "bitwarden.norumin.com"
 }
 
-variable "cert_path" {
-  description = "Path to certificate files"
-  type        = string
+variable "cert" {
+  description = "The SSL certificate"
+  type = object({
+    certificate_pem = string
+    issuer_pem      = string
+    private_key_pem = string
+  })
+  sensitive = true
 }
 
 variable "app_instance_public_ip" {

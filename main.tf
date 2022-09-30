@@ -23,12 +23,14 @@ variable "domain" {
 }
 
 locals {
-  cert_dir_path             = "${abspath(path.root)}/certs"
+
 }
 
 module "root" {
   source = "./modules/bitwarden-root"
 
+  app_name    = var.app_name
+  app         = var.app
   stage       = var.stage
   vpc_cidr    = "10.0.0.0/16"
   vpc_subnets = 3
@@ -37,16 +39,18 @@ module "root" {
 module "cert" {
   source = "./modules/bitwarden-cert"
 
-  stage                   = var.stage
-  domain                  = var.domain
-  email_address           = local.app_env_secrets.bitwarden_installation_email
-  write_certificate_files = true
-  cert_path               = local.cert_dir_path
+  app_name      = var.app_name
+  app           = var.app
+  stage         = var.stage
+  domain        = var.domain
+  email_address = local.app_env_secrets.bitwarden_installation_email
 }
 
 module "app" {
   source = "./modules/bitwarden-app"
 
+  app_name      = var.app_name
+  app           = var.app
   stage         = var.stage
   subnet_id     = module.root.public_subnet_ids[0]
   sg_ids        = module.root.app_instance_sg_ids
@@ -57,6 +61,8 @@ module "app" {
 module "end" {
   source = "./modules/bitwarden-end"
 
+  app_name               = var.app_name
+  app                    = var.app
   stage                  = var.stage
   domain                 = var.domain
   app_instance_public_ip = module.app.instance_public_ip
@@ -71,9 +77,11 @@ module "provision" {
     module.end,
   ]
 
+  app_name                   = var.app_name
+  app                        = var.app
   stage                      = var.stage
   domain                     = var.domain
-  cert_path                  = local.cert_dir_path
+  cert                       = module.cert.cert
   app_instance_public_ip     = module.app.instance_public_ip
   app_keypair_path           = "${path.root}/${local.keypair_filename}"
   bitwarden_installation_id  = local.app_env_secrets.bitwarden_installation_id

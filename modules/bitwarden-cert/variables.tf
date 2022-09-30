@@ -38,14 +38,3 @@ variable "create_acm_certificate" {
   type        = bool
   default     = false
 }
-
-variable "write_certificate_files" {
-  description = "Whether to write certificate files or not"
-  type        = bool
-  default     = false
-}
-
-variable "cert_path" {
-  description = "Path to write certificate files"
-  type        = string
-}

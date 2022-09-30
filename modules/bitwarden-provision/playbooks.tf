@@ -11,10 +11,7 @@ resource "null_resource" "bitwarden_installer" {
     src_hash = filesha256("${path.module}/playbooks/bitwarden.yml")
     dependencies = sha256(jsonencode([
       var.domain,
-      var.cert_path,
-      fileexists("${var.cert_path}/certificate.crt") ? filesha256("${var.cert_path}/certificate.crt") : null,
-      fileexists("${var.cert_path}/private.key") ? filesha256("${var.cert_path}/private.key") : null,
-      fileexists("${var.cert_path}/ca.crt") ? filesha256("${var.cert_path}/ca.crt") : null,
+      var.cert,
       var.app_instance_public_ip,
       var.app_keypair_path,
       var.bitwarden_installation_id,
