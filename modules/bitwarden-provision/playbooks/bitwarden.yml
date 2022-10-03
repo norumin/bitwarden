@@ -81,6 +81,13 @@
         content: |
           LOCAL_UID={{ service_user.uid }}
           LOCAL_GID={{ service_user.group }}
+    - name: Stop docker-compose
+      become: true
+      become_user: "{{ service_user_name }}"
+      docker_compose:
+        project_src: "{{ app_directory }}/bwdata/docker"
+        build: false
+        stopped: true
     - name: Get a fresh Let's Encrypt SSL certificate
       become: true
       become_user: "{{ service_user_name }}"
@@ -144,6 +151,6 @@
     - name: Start docker-compose
       become: true
       become_user: "{{ service_user_name }}"
-      community.docker.docker_compose:
+      docker_compose:
         project_src: "{{ app_directory }}/bwdata/docker"
         restarted: true
