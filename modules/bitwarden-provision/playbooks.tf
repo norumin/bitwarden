@@ -9,14 +9,14 @@ resource "null_resource" "bitwarden_installer" {
 
   triggers = {
     src_hash = filesha256("${path.module}/playbooks/bitwarden.yml")
-    dependencies = sha256(jsonencode([
+    dependencies = jsonencode([
       var.domain,
       var.letsencrypt_contact_email,
       var.app_instance_public_ip,
       var.app_keypair_path,
       var.bitwarden_installation_id,
       var.bitwarden_installation_key,
-    ]))
+    ])
   }
 
   provisioner "local-exec" {
