@@ -23,7 +23,6 @@ variable "domain" {
 }
 
 locals {
-
 }
 
 module "root" {
