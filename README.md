@@ -13,6 +13,7 @@
 
 ## Roadmap
 
+- [ ] CI/CD pipelines
 - [ ] Automagical backup
 - [ ] Automagically detect SSL certificate expiration renew
 - [ ] Customize config file from local
